@@ -93,6 +93,21 @@ yet and the CVE cannot be reached the way Roomsmith uses the package, add it to
 watch: it is the largest attack surface in the closure, and it only ever opens local, script-free
 pages here.
 
+### Status at the current pin (2026-10-18, nixpkgs `26f4107`, the head of nixos-26.05)
+
+`nix run .#cve-scan` reports **57 CVE matches in 16 packages, 5 rated CVSS ≥ 9.0**, and exits
+non-zero. Nothing is whitelisted yet; each needs reading before it is accepted or fixed:
+
+| Packages | Why they are in the closure | Reachability here |
+|---|---|---|
+| avahi, cups, gstreamer, orc, libsoup, libusb, libsndfile, giflib, nghttp2, cjson | Chromium's runtime dependencies (printing, mDNS, media, WebUSB, HTTP/2) | Low: Chromium opens only local, script-free, network-free pages, headless. Still the first thing to bump |
+| zlib, sqlite, glibc, perl, gcc (runtime libs), jq | shared by Python, Chromium and the dev shell | Roomsmith itself never decompresses image data, but Chromium and Python do — read each advisory |
+
+vulnix matches on package name and version, so some of these will already be patched in nixpkgs
+without a version change (false positives). The ones that are not get fixed by `nix flake update`
+as nixos-26.05 picks up the fixes — or sooner by following `nixos-26.05-small`, which receives
+security updates days earlier. Re-run the scan after every update; whitelist only with a reason.
+
 Remote MCP servers (Artlist, OpenRouter) are run by those companies and are not in the closure.
 They authenticate with OAuth; the OpenRouter token expires after 7 days with a spend cap. Revoke
 either from the provider's dashboard.
