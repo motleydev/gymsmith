@@ -1,10 +1,29 @@
 # vulnix whitelist for `nix run .#cve-scan`.
 #
-# Empty on purpose. Add an entry only for a CVE that has been read and does not apply to how
-# Roomsmith uses the package, and say why and until when — a whitelist with no reasons is a
-# list of vulnerabilities nobody is looking at any more. Format:
+# Add an entry only for a CVE that has been read and does not apply, and say why and until when
+# — a whitelist with no reasons is a list of vulnerabilities nobody is looking at any more.
+# Entries are keyed by name-VERSION on purpose: when nixpkgs moves the package, the entry stops
+# matching and the CVE resurfaces for a fresh look.
 #
-#   ["chromium"]
-#   cve = ["CVE-2026-00000"]
-#   until = "2026-12-01"
-#   comment = "Only reachable through WebUSB; Chromium runs headless on local, script-free pages"
+# Triaged 2026-10-18 against nixpkgs 26f4107 (nixos-26.05). All five CVSS >= 9.0 findings were
+# false positives; the evidence is in each comment.
+
+["glibc-2.42-100"]
+cve = ["CVE-2026-5450"]
+until = "2027-04-18"
+comment = "Fixed: nixpkgs applies pkgs/development/libraries/glibc/2.42-master.patch (release/2.42 branch, -100), which contains the upstream fix for BZ #34008 / CVE-2026-5450 (vfscanf %mc one-byte overflow). vulnix only sees the version string."
+
+["zlib-1.3.2"]
+cve = ["CVE-2026-27820"]
+until = "2027-04-18"
+comment = "Wrong product: CVE-2026-27820 is the Ruby zlib gem's Zlib::GzipReader (zstream_buffer_ungets), versions 3.0-3.2.1. This is the C zlib library 1.3.2; matched on name only."
+
+["orc-0.4.41"]
+cve = ["CVE-2025-47436"]
+until = "2027-04-18"
+comment = "Wrong product: CVE-2025-47436 is Apache ORC's C++ LZO decompressor (ORC columnar files, fixed 1.8.9/1.9.6/2.0.5/2.1.2). This is GStreamer's orc (Optimized Inner Loop Runtime Compiler) 0.4.41; matched on name only."
+
+["perl-5.42.3"]
+cve = ["CVE-2026-8376", "CVE-2026-13221"]
+until = "2027-04-18"
+comment = "Fixed in this version: both advisories affect perl 'from 5.41.0 before 5.42.3-RC1'; 5.42.3 is the release after that RC. CVE-2026-8376 is additionally 32-bit only. vulnix mis-orders the RC suffix."

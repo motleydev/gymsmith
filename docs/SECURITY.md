@@ -95,18 +95,26 @@ pages here.
 
 ### Status at the current pin (2026-10-18, nixpkgs `26f4107`, the head of nixos-26.05)
 
-`nix run .#cve-scan` reports **57 CVE matches in 16 packages, 5 rated CVSS ≥ 9.0**, and exits
-non-zero. Nothing is whitelisted yet; each needs reading before it is accepted or fixed:
+`nix run .#cve-scan` first reported **57 matches in 16 packages, 5 rated CVSS ≥ 9.0**. All five
+critical findings were triaged and are **false positives**, whitelisted against their exact
+versions in `security/vulnix-whitelist.toml`:
 
-| Packages | Why they are in the closure | Reachability here |
+| Package | CVE | Why it does not apply |
 |---|---|---|
-| avahi, cups, gstreamer, orc, libsoup, libusb, libsndfile, giflib, nghttp2, cjson | Chromium's runtime dependencies (printing, mDNS, media, WebUSB, HTTP/2) | Low: Chromium opens only local, script-free, network-free pages, headless. Still the first thing to bump |
-| zlib, sqlite, glibc, perl, gcc (runtime libs), jq | shared by Python, Chromium and the dev shell | Roomsmith itself never decompresses image data, but Chromium and Python do — read each advisory |
+| glibc 2.42-100 | CVE-2026-5450 | Fixed by nixpkgs' `2.42-master.patch` (upstream backport naming this CVE) |
+| zlib 1.3.2 | CVE-2026-27820 | A different product: the Ruby `zlib` gem |
+| orc 0.4.41 | CVE-2025-47436 | A different product: Apache ORC, not GStreamer's orc |
+| perl 5.42.3 | CVE-2026-8376, CVE-2026-13221 | Fixed in 5.42.3-RC1; 5.42.3 includes the fix |
 
-vulnix matches on package name and version, so some of these will already be patched in nixpkgs
-without a version change (false positives). The ones that are not get fixed by `nix flake update`
-as nixos-26.05 picks up the fixes — or sooner by following `nixos-26.05-small`, which receives
-security updates days earlier. Re-run the scan after every update; whitelist only with a reason.
+**52 lower-severity matches remain untriaged** (none critical; the highest is 8.8), so the scan
+still exits non-zero. Most are in Chromium's dependencies — gstreamer, libsoup, avahi, cups,
+libsndfile — which this setup barely exercises: Chromium opens only local, script-free,
+network-free pages. The rest are glibc, sqlite, cjson, perl and nghttp2. Expect a share of
+version-only false positives like the ones above.
+
+vulnix matches on package name and version, so it cannot see nixpkgs backports or tell two
+products with the same name apart. Genuine findings are fixed by `nix flake update` as nixos-26.05
+picks up fixes — or sooner by following `nixos-26.05-small`. Re-run the scan after every update.
 
 Remote MCP servers (Artlist, OpenRouter) are run by those companies and are not in the closure.
 They authenticate with OAuth; the OpenRouter token expires after 7 days with a spend cap. Revoke
