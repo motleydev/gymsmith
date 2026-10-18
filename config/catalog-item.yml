@@ -1,0 +1,55 @@
+# A catalog item: something being considered, bought or owned, described well enough to place it
+# in a real room and prove it can be USED there. All lengths in METRES.
+#
+#   design catalog new <id>        copies this file to catalog/<id>.yml
+#   design catalog check <id>      validates it
+#   design catalog verify <id>     you, a person, confirm the numbers; renders refuse until then
+#
+# Usually the catalog-researcher agent writes this from manufacturer pages. Check its sources.
+
+id: example-item
+name: "Brand Model full product name"
+category: rack            # rack | bench | cardio | machine | storage | flooring | accessory | furniture | lighting | appliance | other
+brand: ""
+model: ""
+status: considering       # considering | shortlisted | purchased | owned | rejected
+url: "https://"
+price: {amount: 0, currency: USD, as_of: "YYYY-MM-DD"}
+
+# Assembled, standing in use. w = side to side as you face its front; d = front to back.
+footprint:
+  w: 1.20
+  d: 1.20
+  h: 2.29
+  source_text: '48" W x 48" D x 90" H'   # the source's own words, so the conversion can be checked
+weight_kg: 0
+
+use:
+  # Floor that must stay clear beyond the footprint to use it, per side as you face its front.
+  clearance: {front: 1.20, back: 0.30, left: 0.60, right: 0.60}
+  # Things that stick out in use. `axis: width` runs side to side. A barbell longer than the
+  # rack is wide forces side clearance whatever `clearance` says.
+  implements:
+    - {name: "Olympic barbell", length: 2.20, axis: width}
+  # Height needed in use. Either a fixed ceiling, or a margin above the tallest occupant's
+  # overhead reach (brief.occupants in project.yml).
+  overhead: {above_reach: 0.15, reason: "standing overhead press with plates"}
+  notes: ""
+
+assembly:
+  tilt_up: false          # true if it is built lying down and stood up — needs h²+d² of headroom
+  notes: ""
+
+mounting: {anchor: optional, notes: ""}   # none | optional | required — floor or wall bolts
+power: {}                                 # e.g. {volts: 120, amps: 15, dedicated_circuit: true}
+floor: {notes: ""}                        # point loads, mats, platform needed
+
+sources:
+  - url: "https://"
+    title: ""
+    accessed: "YYYY-MM-DD"
+    confidence: manufacturer   # manufacturer | retailer | measured | review | estimated
+    covers: [footprint, weight_kg]
+
+research_notes: >
+  Where sources disagreed and which was believed, and anything inferred rather than read.

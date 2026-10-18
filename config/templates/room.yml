@@ -32,6 +32,11 @@ brief:
     - id: P1
       text: "Describe a real problem"
 
+  # Who uses the room. Heights drive the overhead checks on catalog equipment (a standing press
+  # needs reach + plates). reach_m, if measured, beats the estimate from height.
+  occupants:
+    - {name: "Primary user", height_m: 1.80}
+
   # Hard limits no direction may break.
   constraints:
     - "Repair defects at source before specifying any finish"

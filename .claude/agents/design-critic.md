@@ -27,6 +27,10 @@ Open **every** image in the pack with Read. Not a sample. Then check, in order:
 7. **Register.** Does it look like the household described in the brief, or has it drifted into
    generic hotel styling?
 8. **Drawing agreement.** Does the render match its own plan and elevations?
+9. **Equipment at true scale.** Each catalog item must read at its real size against the room
+   and the ceiling — a 2.34 m rack under a 2.44 m ceiling nearly touches it. A shrunken rack, a
+   bar shorter than the rack is wide, or anything standing in a clearance zone is a FAIL whose
+   root cause is the catalog entry or the layout, not the image.
 
 ## Reporting
 

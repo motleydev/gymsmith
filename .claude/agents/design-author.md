@@ -28,6 +28,12 @@ Write `projects/<slug>/directions/NN-slug.json` against `directions/_schema.json
   culture, budget)`. A change you cannot validate is a change you delete.
 - `layout` — real rectangles in room coordinates: `{label, x, y, w, d, h, kind, z}`, plus `route`.
   This generates the plan, the elevations and the isometric, so it must be physically true.
+  **Equipment and furniture from the catalog** is placed by id, never by typing its size:
+  `{label, catalog: <id>, x, y, rotation}`. The engine fills `w/d/h` from `catalog/<id>.yml`
+  and draws its clearance zones (walk-out, bar overhang, belt run-off) on the plan. `rotation`
+  is the way the item's front faces: 0 = +y, 90 = −x, 180 = −y, 270 = +x. If an item the client
+  is considering is not in `./bin/design catalog list`, stop and have `catalog-researcher`
+  research it first; never guess a product's dimensions.
 - `scale_check` — add the widths across the room's narrow dimension and state the clear
   circulation lane that survives. Do the arithmetic. If it does not fit, change the design.
 - `retained_treatment` — how every item in `brief.must_appear` is kept and re-worked. Mandatory
@@ -52,4 +58,8 @@ Write `projects/<slug>/directions/NN-slug.json` against `directions/_schema.json
 - Write in specification voice: materials, finishes, dimensions, colour temperatures. No mood-board
   adjectives standing in for decisions.
 - Run `./bin/design check` after each spec. It catches furniture outside the room, collisions and
-  empty justifications. Fix before moving on.
+  empty justifications — and, for catalog items, clearance that runs into a wall or another
+  piece, a door swinging into a lifting area, and overhead reach above the ceiling. Fix before
+  moving on. A layout where the equipment fits but cannot be used is not a layout.
+- **`scale_check` for equipment rooms adds the clearance, not just the footprint.** A 1.25 m
+  rack with a 2.2 m bar needs about 2.8 m side to side to load plates.

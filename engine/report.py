@@ -9,7 +9,6 @@ import html
 import json
 import pathlib
 import re
-import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -23,7 +22,7 @@ def _bind(project):
     DIRECTIONS = project.path / "directions"
     RENDERS = project.path / "renders"
     DRAWINGS = project.path / "drawings"
-    REFS = project.path / "refs"
+    REFS = project.refs_dir
     REPORT = project.path / "report"
     SURVEY = project.path / "brief" / "site-survey.md"
     VIEWS = [(v["id"], v.get("caption", v["id"]))
@@ -49,6 +48,12 @@ AXIS_LABEL = {
     "lighting": "Lighting architecture",
     "programme": "Programme",
 }
+
+
+def chrome_csp():
+    """No script and no network in the report, which quotes text agents and web pages wrote."""
+    from .chrome import CSP
+    return CSP
 
 
 def esc(s):
@@ -478,22 +483,19 @@ def build(project, pdf=True):
 
     out = REPORT / "report.html"
     out.write_text(
-        "<!doctype html><html><head><meta charset='utf-8'>"
+        "<!doctype html><html><head><meta charset='utf-8'>" + chrome_csp() +
         "<title>Twenty Ways to Rebuild One Room</title>"
         f"<style>{CSS}</style></head><body>{''.join(body)}</body></html>"
     )
     print(f"wrote {out}  ({out.stat().st_size/1_048_576:.1f} MB, {len(specs)} directions, {n_items} justified changes)")
 
     if pdf:
-        chrome = next((c for c in ("google-chrome", "chromium", "chromium-browser")
-                       if subprocess.run(["which", c], capture_output=True).returncode == 0), None)
-        if not chrome:
-            sys.exit("no chrome/chromium found for PDF printing")
+        from . import chrome
+        if not chrome.find():
+            sys.exit("no chrome/chromium found for PDF printing (set ROOMSMITH_CHROME)")
         pdf = REPORT / "report.pdf"
-        subprocess.run([chrome, "--headless", "--disable-gpu", "--no-sandbox",
-                        "--no-pdf-header-footer", f"--print-to-pdf={pdf}",
-                        "--virtual-time-budget=30000", out.as_uri()], check=True,
-                       capture_output=True)
+        chrome.run(["--no-pdf-header-footer", f"--print-to-pdf={pdf}",
+                    "--virtual-time-budget=30000", chrome.page_uri(out)], timeout=600, check=True)
         print(f"wrote {pdf}  ({pdf.stat().st_size/1_048_576:.1f} MB)")
 
 

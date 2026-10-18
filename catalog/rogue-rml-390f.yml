@@ -1,0 +1,59 @@
+# Worked example, written the way the catalog-researcher agent writes one. Deliberately NOT
+# verified: run `design catalog verify rogue-rml-390f` only after checking the sources yourself.
+id: rogue-rml-390f
+name: "Rogue RML-390F Flat Foot Monster Lite Rack"
+category: rack
+brand: Rogue Fitness
+model: RML-390F
+status: example
+url: "https://www.rogueeurope.eu/rml-390f-flat-foot-monster-lite-rack-eu"
+
+footprint:
+  w: 1.245
+  d: 1.219
+  h: 2.343
+  source_text: 'Footprint: 48" Deep x 49" Wide; Height 92.25"'
+weight_kg: 133.8
+
+use:
+  # front: walk-out of three steps with a loaded bar, plus room for a bench pulled out of the
+  # rack. back: spotter-arm and plate-storage access. left/right: set by the barbell, below.
+  clearance: {front: 1.50, back: 0.30, left: 0.78, right: 0.78}
+  implements:
+    - {name: "Olympic barbell", length: 2.20, axis: width}
+  overhead: {above_reach: 0.25, reason: "overhead press lockout with 450 mm bumper plates"}
+  notes: >
+    Pull-ups on the top crossmember need the head to clear the bar by about 0.25 m, so about
+    2.60 m to the ceiling. Under a 2.44 m (8 ft) ceiling the top bar cannot be used for strict
+    pull-ups; a lower crossmember or the 80" RML-390F variant would be needed.
+
+assembly:
+  tilt_up: true
+  notes: "Uprights are usually bolted to the bases lying down, then stood up."
+
+mounting: {anchor: none, notes: "Self-stabilising flat-foot base; bolting not required."}
+floor: {notes: "3x3 in rubber feet. A 19 mm stall mat under the whole rack and walk-out is normal."}
+
+sources:
+  - url: "https://support.roguefitness.com/hc/en-us/articles/47297619260052-Product-Guide-Rogue-RML-390F-Flat-Foot-Monster-Lite-Rack"
+    title: "Product Guide: Rogue RML-390F Flat Foot Monster Lite Rack"
+    accessed: "2026-10-18"
+    confidence: manufacturer
+    covers: [footprint, inside depth 24 in]
+  - url: "https://www.rogueeurope.eu/rml-390f-flat-foot-monster-lite-rack-eu"
+    title: "RML-390F Flat Foot Monster Lite Rack (Rogue Europe)"
+    accessed: "2026-10-18"
+    confidence: manufacturer
+    covers: [weight_kg]
+  - url: "https://garagegymlab.com/product/rogue-rml-390f-flat-foot-rack/"
+    title: "Rogue RML-390F Flat Foot Rack (Garage Gym Lab)"
+    accessed: "2026-10-18"
+    confidence: review
+    covers: [inside depth 30 in]
+
+research_notes: >
+  Footprint and the 92.25 in height agree across Rogue's own guide and most retailers; one
+  retailer gives 92.375 in. Inside depth conflicts (Rogue guide 24 in, a review 30 in); it does
+  not affect the footprint or clearances, but measure before buying a bench that must fit inside.
+  Front and side clearances are guidelines derived from the barbell and a walk-out, not
+  manufacturer figures.

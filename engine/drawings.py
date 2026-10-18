@@ -11,7 +11,8 @@ from __future__ import annotations
 
 import math
 import pathlib
-import subprocess
+
+from . import chrome
 
 INK, MID, LIGHT, PAPER = "#16181d", "#7b8189", "#c8ccd2", "#fbfaf7"
 ACCENT, FURN, JOIN = "#a1442c", "#e2ddd2", "#c9b98f"
@@ -150,6 +151,16 @@ def draw_plan(room, spec=None, blueprint=False, title=None):
 
     # direction layout
     if spec and spec.get("layout"):
+        # Clearance needed to USE catalog equipment, under the furniture so overlaps show.
+        zone = "#7fd4ff" if blueprint else ACCENT
+        for it in spec["layout"].get("plan", []):
+            for z in it.get("_zones", []):
+                ZX, ZY = px(z["x"], z["y"])
+                o.append(f'<rect x="{ZX:.1f}" y="{ZY:.1f}" width="{z["w"] * S:.1f}" '
+                         f'height="{z["d"] * S:.1f}" fill="{zone}" fill-opacity="0.08" '
+                         f'stroke="{zone}" stroke-width="0.8" stroke-dasharray="3 3"/>')
+                o.append(t(ZX + z["w"] * S / 2, ZY + z["d"] * S / 2 + 3,
+                           f"{z['side']} {mm(z['depth'], room.units)}", 6.5, zone, "middle"))
         for it in spec["layout"].get("plan", []):
             X, Y = px(it["x"], it["y"])
             fill = f_join if it.get("kind") == "built" else f_furn
@@ -358,9 +369,7 @@ def draw_iso(room, spec=None, hide=None):
 
 def rasterise(svg_path, png_path, width=1500):
     """SVG -> PNG via headless Chrome. The SVG is always written; only the raster needs a browser."""
-    chrome = next((c for c in ("google-chrome", "chromium", "chromium-browser", "chrome")
-                   if subprocess.run(["which", c], capture_output=True).returncode == 0), None)
-    if not chrome:
+    if not chrome.find():
         print(f"    note: no Chrome/Chromium found - wrote {pathlib.Path(svg_path).name} "
               f"but could not rasterise it to PNG", flush=True)
         return False
@@ -368,10 +377,9 @@ def rasterise(svg_path, png_path, width=1500):
     w = int(txt.split('width="')[1].split('"')[0])
     h = int(txt.split('height="')[1].split('"')[0])
     html = pathlib.Path(svg_path).with_suffix(".html")
-    html.write_text(f'<html><body style="margin:0">{txt}</body></html>')
-    subprocess.run([chrome, "--headless", "--disable-gpu", "--no-sandbox", "--hide-scrollbars",
-                    f"--force-device-scale-factor={width/w:.4f}", f"--window-size={w},{h}",
-                    f"--screenshot={png_path}", html.as_uri()], capture_output=True)
+    html.write_text(chrome.with_csp(f'<html><head></head><body style="margin:0">{txt}</body></html>'))
+    chrome.run([f"--force-device-scale-factor={width/w:.4f}", f"--window-size={w},{h}",
+                f"--screenshot={png_path}", chrome.page_uri(html)])
     html.unlink(missing_ok=True)
     return pathlib.Path(png_path).exists()
 

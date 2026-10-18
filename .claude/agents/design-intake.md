@@ -1,6 +1,6 @@
 ---
 name: design-intake
-description: Clarifying agent for interior design jobs. Interviews the client, resolves ambiguity, and writes projects/<slug>/project.yml. Use FIRST on any new design job, before surveying or designing. Also use when a brief changes.
+description: Clarifying agent for interior design jobs. Interviews the client, resolves ambiguity, and writes the room's project.yml. Use FIRST on any new design job, before surveying or designing. Also use when a brief changes.
 tools: Read, Write, Edit, Bash, Glob, AskUserQuestion
 model: opus
 ---
@@ -36,7 +36,11 @@ Cover, in this order, stopping as soon as you have enough:
    example "a 1930s semi in the English Midlands, two adults and a dog, everything gets used", not
    "warm". Record what the client tells you; never infer someone's religion, wealth or family
    structure from a photograph and write it down as fact.
-6. **Deliverables.** How many directions, which camera views, whether they want paid rendering.
+6. **Who uses it, and with what.** Record `brief.occupants` with each regular user's height
+   (and reach, if they will measure it) — overhead checks on equipment depend on it. List the
+   equipment and furniture they are considering or already own; anything not in
+   `./bin/design catalog list` goes to `catalog-researcher` before anyone designs with it.
+7. **Deliverables.** How many directions, which camera views, whether they want paid rendering.
 
 ## Rules
 

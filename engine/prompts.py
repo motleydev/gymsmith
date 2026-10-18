@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import math
 
+from . import catalog
+
 
 def openings_inventory(room):
     lines = []
@@ -219,6 +221,8 @@ HEADLINE INTERVENTIONS VISIBLE IN THIS IMAGE:
 
 WHERE THINGS SIT (this matches the attached measured drawing):
 {spec.get('scale_check','')}
+
+{catalog.prompt_block(spec)}
 
 {('HOW THE RETAINED FURNITURE IS TREATED:' + chr(10) + (spec.get('retained_treatment') or spec.get('teak_treatment') or '')) if (spec.get('retained_treatment') or spec.get('teak_treatment')) else ''}
 {fixed}

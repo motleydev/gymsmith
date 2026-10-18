@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./bin/design status:*)",
+      "Bash(./bin/design check:*)",
+      "Bash(./bin/design gates:*)",
+      "Bash(./bin/design rooms:*)",
+      "Bash(./bin/design rev list:*)",
+      "Bash(./bin/design rev diff:*)",
+      "Bash(./bin/design catalog list:*)",
+      "Bash(./bin/design catalog show:*)",
+      "Bash(./bin/design catalog check:*)",
+      "Bash(./bin/design render --dry:*)",
+      "Bash(./bin/design drawings:*)",
+      "Bash(./tests/run.sh)",
+      "mcp__roomsmith__rooms_list",
+      "mcp__roomsmith__room_status",
+      "mcp__roomsmith__catalog_list",
+      "mcp__roomsmith__catalog_get",
+      "mcp__roomsmith__annotations_get"
+    ],
+    "deny": [
+      "Bash(./bin/design approve:*)",
+      "Bash(design approve:*)",
+      "Bash(./bin/design catalog verify:*)",
+      "Bash(design catalog verify:*)",
+      "Bash(./bin/design catalog unverify:*)",
+      "Bash(design catalog unverify:*)",
+      "Bash(*ROOMSMITH_CODEX_SANDBOX=off*)",
+      "Read(./.env)",
+      "Read(./.openrouter_key)",
+      "Edit(./catalog/.verified.json)",
+      "Write(./catalog/.verified.json)",
+      "Edit(./projects/**/STATE.json)",
+      "Write(./projects/**/STATE.json)"
+    ]
+  }
+}

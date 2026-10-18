@@ -1,6 +1,9 @@
 """Project config, run state, and the approval gates.
 
-One project = one job = one directory under projects/<slug>/ containing:
+One job = one directory containing the files below. In the flat layout that is
+projects/<slug>/; in the nested layout it is one revision of one room,
+projects/<project>/rooms/<room>/revisions/<rev>/ (see engine/workspace.py), where refs/ is shared at
+room level.
 
     project.yml     what the client wants and what the room is       (the only file they edit)
     STATE.json      which gates have been approved, and by whom       (written by the tool)
@@ -23,8 +26,8 @@ import subprocess
 import sys
 import time
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
-PROJECTS = ROOT / "projects"
+from . import workspace
+from .paths import CODE as ROOT, PROJECTS
 
 # Ordered. Each gate guards the step named in `guards`.
 GATES = [
@@ -59,6 +62,20 @@ class Project:
     @property
     def slug(self):
         return self.path.name
+
+    @property
+    def address(self):
+        """What to pass to --project to get back here: 'slug' or 'project/room@rev'."""
+        return workspace.address_of(self.path)
+
+    @property
+    def room_dir(self):
+        return workspace.room_dir_of(self.path)
+
+    @property
+    def refs_dir(self):
+        """Photographs. Shared by every revision of a room, since they are of the physical room."""
+        return (self.room_dir / "refs") if self.room_dir else (self.path / "refs")
 
     def _cfg_file(self):
         for n in ("project.yml", "project.yaml", "project.json"):
@@ -118,7 +135,7 @@ class Project:
             f"  {g[1]}.\n"
             f"  It guards: {g[2]}.\n\n"
             f"Review the work, then:\n"
-            f"  design approve {gate} --project {self.slug} --note \"...\"\n")
+            f"  design approve {gate} --project {self.address} --note \"...\"\n")
 
     # ---------------------------------------------------------------- config accessors
 
@@ -152,7 +169,8 @@ class Project:
 
     def dirs(self):
         d = {k: self.path / k for k in
-             ("refs", "brief", "directions", "drawings", "renders", "report", "prompts")}
+             ("brief", "directions", "drawings", "renders", "report", "prompts")}
+        d["refs"] = self.refs_dir
         for p in d.values():
             p.mkdir(parents=True, exist_ok=True)
         return d
@@ -160,8 +178,17 @@ class Project:
     def specs(self):
         out = []
         for f in sorted((self.path / "directions").glob("[0-9][0-9]-*.json")):
-            out.append(json.loads(f.read_text()))
+            out.append(self._resolve_spec(json.loads(f.read_text())))
         return sorted(out, key=lambda s: s["id"])
+
+    def load_spec(self, key):
+        """One direction, with catalog items resolved to their real dimensions."""
+        return self._resolve_spec(
+            json.loads((self.path / "directions" / f"{key}.json").read_text()))
+
+    def _resolve_spec(self, spec):
+        from . import catalog
+        return catalog.resolve_spec(spec)
 
     def spec_key(self, partial):
         for f in sorted((self.path / "directions").glob("[0-9][0-9]-*.json")):
@@ -171,27 +198,28 @@ class Project:
 
 
 def resolve(slug=None):
-    """Find the project to work on: named, or the only one, or the configured default."""
-    PROJECTS.mkdir(exist_ok=True)
+    """Find the job to work on: the address given, the configured default, or the only one."""
+    PROJECTS.mkdir(parents=True, exist_ok=True)
     if slug:
-        p = PROJECTS / slug
-        if not p.exists():
-            raise SystemExit(f"no project {slug!r} in {PROJECTS}")
-        return Project(p)
-    cur = ROOT / "config" / "current"
-    if cur.exists():
-        name = cur.read_text().strip()
-        if (PROJECTS / name).exists():
-            return Project(PROJECTS / name)
-    candidates = [d for d in PROJECTS.iterdir()
-                  if d.is_dir() and any((d / n).exists()
-                                        for n in ("project.yml", "project.yaml", "project.json"))]
+        return Project(workspace.locate(slug)[0])
+    cur = workspace.current()
+    if cur:
+        try:
+            return Project(workspace.locate(cur)[0])
+        except SystemExit:
+            pass        # stale pointer; fall through to discovery
+    candidates = []
+    for entry in workspace.tree():
+        if entry["flat"]:
+            candidates.append(entry["project"])
+        else:
+            candidates += [f"{entry['project']}/{r['room']}" for r in entry["rooms"] if r["head"]]
     if len(candidates) == 1:
-        return Project(candidates[0])
+        return Project(workspace.locate(candidates[0])[0])
     if not candidates:
-        raise SystemExit("no projects yet. Run:  design init <slug>")
-    raise SystemExit("several projects; pass --project <slug>: "
-                     + ", ".join(sorted(d.name for d in candidates)))
+        raise SystemExit("no projects yet. Run:  design init <project>/<room>")
+    raise SystemExit("several projects; pass --project <address> or run  design use <address>:\n  "
+                     + "\n  ".join(sorted(candidates)))
 
 
 # ---------------------------------------------------------------------------- tiny YAML

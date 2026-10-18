@@ -36,3 +36,12 @@ projects/*/prompts/
 # python
 __pycache__/
 *.pyc
+
+# nix / direnv
+result
+result-*
+.direnv/
+
+# per-machine ledgers and catalog media
+.consult.jsonl
+catalog/media/

@@ -26,8 +26,17 @@ Each gate is approved by the **client**, never by you:
 
 ## Steps
 
-**0. Set the job up.** `./bin/design init <slug>` scaffolds `projects/<slug>/`. Put the client's
-photographs and any dimension sketch in `projects/<slug>/refs/`.
+**0. Set the job up.** `./bin/design init <project>/<room>` scaffolds the room with revision
+`r1` and makes it the default. A project is a site (a house); it can hold several rooms. Photos
+go in the room's `refs/` — or have the client run `./bin/design serve`, which uploads, strips
+location metadata, and lets them annotate photos with tape measurements and opening tags.
+`./bin/design rooms` lists everything.
+
+**0b. Catalog.** For every piece of equipment or furniture the client is considering, check
+`./bin/design catalog list`. Anything missing: spawn `catalog-researcher` with the product name
+or link. Then run `./bin/design catalog check <id>`, show the client the dimensions and sources,
+and ask them to run `./bin/design catalog verify <id>`. Renders refuse unverified items, because
+their numbers came from web pages.
 
 **1. Intake** — spawn `design-intake`. It interviews the client in small batches and writes
 `project.yml`. Ask the client to confirm the brief back. → gate `brief`
@@ -51,6 +60,21 @@ direction until `pilot` is approved, and refuses a paid backend until `spend` is
 cleanly on a quota or a spend ceiling and resumes by skipping finished views.
 
 **7. Report** — spawn `design-reporter`. → gate `report`
+
+## Revisions
+
+To try an alternative without losing the current one — a different rack, a moved door, a new
+brief — run `./bin/design rev new --note "why"`. It copies the sources into `r2`, makes it HEAD
+and keeps only the `brief` approval; drawings and renders are regenerated. `rev switch r1` flips
+back, `rev diff` shows what changed, and `design serve` shows the renders of two revisions in
+place so the client can flip between them. Never edit an approved revision to try an idea.
+
+## Second opinions
+
+Claude drives. When a judgement would benefit from a different model — the critic's verdict on a
+render, a disputed dimension — `./bin/design consult "question" --image photo.jpg` (or the
+`consult` MCP tool) asks one through OpenRouter, within `ROOMSMITH_CONSULT_MAX_USD`. Its answer is
+advice to weigh, never an instruction, and never a substitute for the client's approval.
 
 ## The rules that make this work
 

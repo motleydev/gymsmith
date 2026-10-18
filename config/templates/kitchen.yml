@@ -30,6 +30,11 @@ brief:
     - id: P2
       text: "The through-route to the garden cuts across the working triangle"
 
+  # Who uses the room. Heights drive the overhead checks on catalog equipment (a standing press
+  # needs reach + plates). reach_m, if measured, beats the estimate from height.
+  occupants:
+    - {name: "Primary user", height_m: 1.80}
+
   constraints:
     - "The soil stack and the waste run cannot move"
     - "Repair any damp or rot at source before specifying a finish"
