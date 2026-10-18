@@ -1,5 +1,6 @@
 """`design` — the single entry point.
 
+    design demo                              a ready-made garage gym to try everything on
     design init <project>/<room> [--from T]  scaffold a room (r1) in a project; or a flat <slug>
     design rooms                             every project, room and revision; HEAD marked
     design use <project>/<room>              make that room the default for every command
@@ -178,6 +179,61 @@ def cmd_catalog(a):
     elif act == "unverify":
         catalog.unverify(a.id)
         print(f"unverified {a.id}")
+
+
+def _demo_spec(rack_x, note):
+    return {
+        "id": "01", "slug": "rack-on-the-block-wall", "name": "Rack on the block wall",
+        "tagline": note,
+        "thesis": "Put the rack against the solid block wall, facing across the garage, so the "
+                  "walk-out runs towards the window wall and the house door swings into empty floor.",
+        "scale_check": f"Across the 3.60 m garage: {rack_x:.2f} m behind the rack + 1.22 m rack + "
+                       f"1.50 m walk-out = {rack_x + 1.219 + 1.5:.2f} m.",
+        "items": [{"item": "Power rack", "change": "Rogue RML-390F on 19 mm stall mats",
+                   "reason": "One rack covers squat, bench, press and pull-ups",
+                   "validation": "design check proves the walk-out, bar overhang and overhead reach"}],
+        "layout": {"plan": [
+            {"label": "Power rack", "catalog": "rogue-rml-390f", "x": rack_x, "y": 2.2,
+             "rotation": 270},
+            {"label": "Plate tree", "x": 0.10, "y": 5.10, "w": 0.60, "d": 0.60, "h": 1.20},
+        ]},
+        "render": {"default": "A tidy garage gym: black stall mats, a matt black rack, bumper "
+                              "plates on a tree, warm daylight from the window."},
+    }
+
+
+def cmd_demo(a):
+    """A ready-made room to try everything on: two revisions, one fails check, one passes."""
+    from .paths import CATALOG, CODE
+    addr = "demo/garage-gym"
+    if (PROJECTS / "demo" / "rooms" / "garage-gym").exists():
+        sys.exit(f"{addr} already exists. Remove {PROJECTS / 'demo'} to rebuild it.")
+    CATALOG.mkdir(parents=True, exist_ok=True)
+    rack = CATALOG / "rogue-rml-390f.yml"
+    if not rack.exists():
+        shutil.copy(CODE / "catalog" / "rogue-rml-390f.yml", rack)
+    job = workspace.new_room("demo", "garage-gym", CODE / "config" / "demo" / "garage-gym.yml")
+    rd = job.parent.parent
+    key = "01-rack-on-the-block-wall"
+    (job / "directions" / f"{key}.json").write_text(json.dumps(
+        _demo_spec(0.0, "Rack hard against the wall."), indent=2) + "\n")
+    rid = workspace.new_revision(rd, "r1", "rack 0.3 m off the wall, so the back is usable")
+    (rd / "revisions" / rid / "directions" / f"{key}.json").write_text(json.dumps(
+        _demo_spec(0.30, "Rack 0.3 m off the wall."), indent=2) + "\n")
+    workspace.switch(rd, rid)
+    workspace.use(addr)
+    print(f"""created {addr} with two revisions (HEAD is r2) and the example rack in the catalog.
+
+Try:
+  design rooms                          what exists
+  design check --project {addr}@r1   r1 FAILS: the rack's back clearance runs into the wall
+  design check                          r2 passes, with warnings worth reading
+  design rev diff r1..r2                exactly what changed
+  design approve room-model             your call: the demo room's numbers are invented
+  design drawings 01                    plan with the rack's clearance zones drawn on it
+  design serve                          upload photos, annotate, flip r1/r2, review the catalog
+  design catalog verify rogue-rml-390f  after reading its sources — renders refuse until then
+  design render --dry                   every prompt built and checked, nothing spent""")
 
 
 def cmd_serve(a):
@@ -498,6 +554,7 @@ def main(argv=None):
     s.set_defaults(fn=cmd_serve)
 
     s = sub.add_parser("mcp", parents=[common]); s.set_defaults(fn=cmd_mcp)
+    s = sub.add_parser("demo", parents=[common]); s.set_defaults(fn=cmd_demo)
 
     s = sub.add_parser("consult", parents=[common]); s.add_argument("question")
     s.add_argument("--model"); s.add_argument("--image", action="append", default=[],

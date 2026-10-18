@@ -45,6 +45,25 @@ then in Claude Code:
 /interior-design
 ```
 
+## Try it in five minutes
+
+```bash
+git clone -b claude/serene-bell-7pp32i https://github.com/motleydev/gymsmith && cd gymsmith
+nix develop                     # first run downloads Python, Chromium and fonts (~1 GB, once)
+./bin/design demo               # a garage gym with a real rack, in two revisions
+./bin/design check --project demo/garage-gym@r1    # FAILS: the rack's back clearance hits the wall
+./bin/design check              # r2 (HEAD) passes
+./bin/design rev diff r1..r2    # the 0.3 m that fixed it
+./bin/design approve room-model --note "demo"      # gates are always yours to approve
+./bin/design drawings 01        # projects/demo/rooms/garage-gym/revisions/r2/drawings/01-…-plan.png
+./bin/design serve              # open the printed link: photos, annotation, r1/r2 flip, catalog
+```
+
+No Nix? Python 3.9+ and Chrome are enough for all of the above. Then open Claude Code in the
+folder and try *"we're thinking about a Rep PR-4000 rack and a Concept2 rower for the garage"* —
+it researches both into the catalog, and you verify them with `./bin/design catalog verify <id>`.
+For Artlist and OpenRouter, run `/mcp` in Claude Code once and sign in.
+
 ## What it produces
 
 For each design direction:

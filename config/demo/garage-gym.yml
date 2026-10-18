@@ -1,0 +1,74 @@
+# The demo room created by `design demo`. A single-car garage becoming a home gym. Synthetic:
+# every dimension here is invented for the demo, not measured.
+name: "Garage to home gym (demo)"
+client: "Demo"
+
+brief:
+  what_it_is: >
+    A single-car attached garage being turned into a home gym for two people who lift three
+    times a week. The car moves to the drive. The roll-up door stays and is opened in summer.
+  register: >
+    A working garage gym: rubber stall mats, bare painted block walls, practical lighting.
+    Used hard, kept tidy. Not a commercial gym fit-out.
+  must_appear:
+    - "A power rack with an Olympic barbell"
+  fixed_furniture_note: ""
+  problems:
+    - id: P1
+      text: "The rack must leave room to load a 2.2 m bar and walk a squat out"
+    - id: P2
+      text: "The door from the house must open without hitting anyone mid-lift"
+  occupants:
+    - {name: "Lifter A", height_m: 1.83}
+    - {name: "Lifter B", height_m: 1.68}
+  constraints:
+    - "The roll-up door and its track stay"
+    - "Nothing bolted through the slab"
+
+room:
+  name: "Garage gym"
+  units: m
+  ceiling_height: 2.74
+  confirmed: false
+  shape: {type: rectangle, width: 3.6, length: 6.0}
+  wall_names:
+    w1: {name: "House wall - door from the utility room", role: entrance}
+    w2: {name: "Side wall - window", role: flank}
+    w3: {name: "Roll-up door wall", role: far}
+    w4: {name: "Side wall - solid block", role: flank}
+  openings:
+    - {tag: D1, type: door, wall: w1, pos: 2.7, width: 0.8, sill: 0.0, head: 2.03, desc: "Door from the utility room, opens inward"}
+    - {tag: W1, type: window, wall: w2, pos: 3.0, width: 1.2, sill: 1.1, head: 2.0, desc: "Single window"}
+    - {tag: G1, type: opening, wall: w3, pos: 1.8, width: 2.75, sill: 0.0, head: 2.13, desc: "Roll-up garage door, closed"}
+  features: []
+  shell_notes:
+    - "Painted concrete block walls, exposed joists overhead, a bare concrete slab."
+  existing:
+    floor: "Bare concrete slab"
+    ceiling: "Exposed timber joists"
+    walls: "Painted concrete block"
+  notes:
+    - "Demo room: every dimension is invented."
+
+deliverables:
+  directions: 1
+  aspect_ratio: "16:9"
+  elevations: [w1, w2, w3, w4]
+  iso_hide_walls: [w1, w2]
+  views:
+    - id: hero-in
+      caption: "From the house door, looking in"
+      drawings: [plan, iso]
+      photos: []
+      from:    [2.70, 0.40]
+      look_at: [1.00, 6.00]
+      camera: >
+        CAMERA — HERO. Standing just inside the house door looking down the garage.
+        24 mm lens, eye level 1.60 m.
+
+style:
+  richness: ""
+
+render:
+  backend: codex
+  max_spend_usd: 5

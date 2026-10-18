@@ -225,6 +225,20 @@ def test_server_auth_and_defences():
         srv.shutdown()
 
 
+# ---------------------------------------------------------------- demo
+
+def test_demo_room_r1_fails_r2_passes():
+    shutil.rmtree(HOME, ignore_errors=True)
+    from engine import cli
+    cli.main(["demo"])
+    rd = HOME / "projects" / "demo" / "rooms" / "garage-gym"
+    assert workspace.head(rd) == "r2"
+    e1, _ = check(rd / "revisions" / "r1")
+    e2, _ = check(rd / "revisions" / "r2")
+    assert any("back" in e and "wall" in e for e in e1), e1
+    assert not e2, e2
+
+
 # ---------------------------------------------------------------- mcp
 
 def test_mcp_protocol_and_confinement():

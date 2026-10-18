@@ -24,10 +24,13 @@ stdenvNoCC.mkDerivation {
   pname = "roomsmith";
   version = "1.1.0";
 
-  # Only what runs. Docs, tests, the example project and the catalog are not in the package.
+  # Only what runs, plus what `design demo` needs. Docs, tests and the worked example are not.
   src = lib.fileset.toSource {
     root = ../.;
-    fileset = lib.fileset.unions [ ../engine ../config/templates ../config/catalog-item.yml ];
+    fileset = lib.fileset.unions [
+      ../engine ../config/templates ../config/catalog-item.yml ../config/demo
+      ../catalog/rogue-rml-390f.yml
+    ];
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -37,7 +40,7 @@ stdenvNoCC.mkDerivation {
   installPhase = ''
     runHook preInstall
     mkdir -p $out/share/roomsmith $out/bin
-    cp -r engine config $out/share/roomsmith/
+    cp -r engine config catalog $out/share/roomsmith/
     # -P: never put the current directory on sys.path, so a stray engine/ or yaml.py in
     # whatever directory you run `design` from cannot be imported in place of the real one.
     makeWrapper ${python}/bin/python3 $out/bin/design \
