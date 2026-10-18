@@ -5,6 +5,16 @@ description: "Install Roomsmith and run your first interior design job. Python 3
 
 # Setup
 
+## The easy way: Nix
+
+```bash
+nix develop            # Python, PyYAML, Chromium and fonts, pinned. Then use ./bin/design as below
+nix develop .#agents   # the same plus Claude Code and the Codex CLI
+```
+
+See [NIX](NIX.md) for installing it system-wide, the container image and the CVE scan. Without
+Nix, the requirements are:
+
 ## Requirements
 
 | Need | Check | Why |
@@ -48,12 +58,13 @@ agent's job. In Claude Code, run `/interior-design` and it will walk you through
 
 ## Working on several jobs
 
-Each job is a directory under `projects/`. The tool uses the only one present, or the slug in
-`config/current`, or `--project <slug>`:
+Projects hold rooms and rooms hold revisions — see [WORKSPACES](WORKSPACES.md). The tool uses
+`--project <address>`, else the default set by `design use`, else the only room there is:
 
 ```bash
-./bin/design status --project kitchen-refit
-echo kitchen-refit > config/current
+./bin/design init house/kitchen
+./bin/design status --project house/garage@r2
+./bin/design use house/kitchen
 ```
 
 ## Troubleshooting

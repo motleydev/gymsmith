@@ -18,6 +18,7 @@ annotated template; this is the reference.
 | `fixed_furniture_note` | An extra sentence pinned into every prompt about retained items |
 | `problems` | `{id, text}`. Directions refer back to these ids |
 | `constraints` | Hard limits no direction may break |
+| `occupants` | `{name, height_m, reach_m}`. Drives overhead checks on catalog equipment; reach defaults to 1.25 × height |
 
 ## room
 

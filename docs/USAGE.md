@@ -14,12 +14,19 @@ Day-to-day commands and recipes. See `WORKFLOW.md` for the gate-by-gate walkthro
 ./bin/design <command> [--project <slug>]
 ```
 
-`--project` works before or after the command. If you omit it, the tool uses the only project
-present, or the slug in `config/current`.
+`--project` works before or after the command and takes an address: `house/garage`,
+`house/garage@r2`, or a single-room project's slug. If you omit it, the tool uses the default set
+by `design use`, or the only room there is.
 
 | Command | Does |
 |---|---|
-| `init <slug> [--from room\|kitchen]` | Scaffold a new job |
+| `init <project>/<room> [--from room\|kitchen]` | Scaffold a room (revision r1) in a project; a bare `<slug>` makes a single-room project |
+| `rooms` · `use <address>` | List projects/rooms/revisions · set the default |
+| `rev list\|new\|switch\|diff` | Revisions of a room — see [WORKSPACES](WORKSPACES.md) |
+| `catalog list\|show\|check\|verify\|new` | The equipment catalog — see [CATALOG](CATALOG.md) |
+| `serve [--port N]` | Photo upload, annotation, revision flip — see [SERVICES](SERVICES.md) |
+| `consult "question" [--model M] [--image F]` | A second opinion from another model via OpenRouter |
+| `mcp` | The MCP server (stdio) Claude Code starts from `.mcp.json` |
 | `status` | Where the job is: room, directions, views rendered, spend, gates |
 | `gates` | Every gate, what it guards, whether it is approved |
 | `check` | Validate config, geometry and layouts. **Run this constantly** |

@@ -98,6 +98,24 @@ arithmetic — is computed. Anything that benefits from *judgement* — the brie
 critique — is an agent. Anything that needs *imagination* — light, material, atmosphere — is the
 image model, and it is given no say in the geometry.
 
+## Workspaces, catalog and services
+
+```
+engine/paths.py      CODE (read-only, may be /nix/store) vs HOME (projects, catalog, .env)
+engine/workspace.py  project → room → revision; HEAD; addresses; diff
+engine/catalog.py    items, validation, hash-bound verification, placement, clearance checks
+engine/server.py     design serve — stdlib HTTP, token cookie, Host/Origin checks, CSP
+engine/imagesafe.py  upload sniffing and metadata stripping
+engine/mcp.py        read-only MCP server over workspace + catalog, plus consult
+engine/consult.py    OpenRouter second opinions with an allowlist and a ceiling
+engine/chrome.py     hardened headless Chrome for rasterising and PDF
+```
+
+A revision is an ordinary job directory, so nothing below `Project` knows revisions exist.
+Catalog items are resolved into a spec's layout when it is loaded (`Project.load_spec`), so
+drawings, elevations, the isometric, prompts and checks all see real dimensions without knowing
+the catalog exists either. Clearance zones ride along on each item as `_zones`.
+
 ## Testing
 
 `tests/run.sh` is the whole suite: engine imports, unit tests, the example project, both templates
@@ -111,3 +129,4 @@ the maintainer on every push is noise for a project this size.
 
 Python 3 standard library only. PyYAML is used if installed; otherwise a small YAML parser in
 `engine/project.py` handles the project file. Chrome or Chromium rasterises SVG and prints the PDF.
+`flake.nix` pins all of it, plus fonts; see [NIX](NIX.md).

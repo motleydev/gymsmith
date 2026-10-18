@@ -17,6 +17,7 @@ it has surveyed, and to justify a decision it has already made.
 | `design-author` | once per direction | `directions/NN-slug.json` | Read, Write, Edit, Bash, Glob, Grep |
 | `design-critic` | after every pack | a defect report with root causes | Read, Bash, Glob, Grep (read-only by design) |
 | `design-reporter` | at the end | `report/report.pdf` | Read, Write, Edit, Bash, Glob |
+| `catalog-researcher` | whenever an item is mentioned that is not in the catalog | `catalog/<id>.yml` | Read, Write, Glob, Grep, WebSearch, WebFetch — **no shell**, because it reads the open web |
 
 ## Why each exists
 
@@ -39,6 +40,10 @@ reason and a validation against the room's actual constraints.
 **Critic** is deliberately **read-only**. It cannot fix anything, which forces it to report the
 *root cause* — the room model, the prompt builder, the camera config — rather than patching one
 image. A fix that does not carry forward recurs in every remaining direction.
+
+**Catalog researcher** exists because a spec sheet gives the box, and a room needs the use
+envelope: walk-out, bar overhang, belt run-off, overhead reach. It reads untrusted web pages, so
+it has no shell and its output is not trusted until the client verifies it.
 
 **Reporter** exists because a report is not done when it is generated. It rasterises pages and
 reads them back, since layout errors are invisible in source and obvious on the page.

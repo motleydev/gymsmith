@@ -36,8 +36,9 @@ layout, and every change carries a specification, a reason, and a validation aga
 real constraints.
 
 ```bash
-./bin/design init my-room
-cp ~/photos/*.jpg projects/my-room/refs/
+nix develop                         # or skip Nix: Python 3.9+ and Chrome are enough
+./bin/design init house/garage      # a project, a room, revision r1
+./bin/design serve                  # upload + annotate photos in the browser
 ```
 then in Claude Code:
 ```
@@ -221,10 +222,30 @@ For the agents, yes. The `design` CLI works standalone if you'd rather write the
 faster for that. Roomsmith is also not a CAD package: it produces presentation drawings, not
 construction drawings, and every dimension read from a photograph is flagged for verification on site.
 
+## Projects, rooms, revisions — and the things you put in them
+
+- **Projects hold rooms, rooms hold revisions.** `design rev new` branches the design, `rev switch`
+  flips HEAD back, and `design serve` flips two revisions' renders in place. [WORKSPACES](docs/WORKSPACES.md)
+- **An equipment and furniture catalog** of what you're considering or own. Mention a squat rack
+  and Claude researches its footprint *and its use envelope* — walk-out, the 2.2 m bar's
+  overhang, overhead press reach, tilt-up height — with a source for every number. `design check`
+  then proves it can be **used** where it stands, not just that it fits. [CATALOG](docs/CATALOG.md)
+- **A local photo service**: uploads with location metadata stripped, and an annotation tool for
+  tape measurements and opening tags the surveyor trusts. [SERVICES](docs/SERVICES.md)
+- **More than one model.** Claude drives; Artlist and OpenRouter are wired in as MCP servers, and
+  `design consult` asks another model for a spend-capped second opinion. [SERVICES](docs/SERVICES.md#mcp-servers)
+- **Runs anywhere** with Nix — pinned Python, Chromium and fonts on Linux and macOS, a container
+  image, and a CVE scan of the whole closure. [NIX](docs/NIX.md) · [SECURITY](docs/SECURITY.md)
+
 ## Documentation
 
 | | |
 |---|---|
+| [NIX](docs/NIX.md) | Run anywhere: flake, dev shells, container, CVE scan |
+| [WORKSPACES](docs/WORKSPACES.md) | Projects, rooms and revisions |
+| [CATALOG](docs/CATALOG.md) | Equipment and furniture, and the clearance to use it |
+| [SERVICES](docs/SERVICES.md) | Photo upload and annotation, MCP servers, second opinions |
+| [SECURITY](docs/SECURITY.md) | Prompt injection, the local server, CVEs |
 | [SETUP](docs/SETUP.md) | Install and first run |
 | [USAGE](docs/USAGE.md) | Commands and recipes |
 | [WORKFLOW](docs/WORKFLOW.md) | The full job, gate by gate |
@@ -237,7 +258,7 @@ construction drawings, and every dimension read from a photograph is flagged for
 
 ## Requirements
 
-Python 3.9+ · Chrome or Chromium · one render backend
+Nix (everything pinned) — or Python 3.9+ · Chrome or Chromium · one render backend
 ([Codex CLI](https://github.com/openai/codex) free, or an [OpenRouter](https://openrouter.ai) key)
 
 ## Contributing
