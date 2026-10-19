@@ -24,6 +24,32 @@ Requires Nix with flakes (`experimental-features = nix-command flakes`). With
 [direnv](https://direnv.net), `direnv allow` enters the dev shell automatically (`.envrc` is
 committed).
 
+## Every command is an app
+
+Each `design` subcommand is also a flake app. Arguments go after `--`:
+
+| | |
+|---|---|
+| `nix run .#demo` | a ready-made garage gym in two revisions |
+| `nix run .#init -- house/garage` | scaffold a room |
+| `nix run .#rooms` · `nix run .#use -- house/garage` | list everything · set the default |
+| `nix run .#status` · `nix run .#gates` | where the job is · the approval gates |
+| `nix run .#check` | geometry, layouts and catalog clearances |
+| `nix run .#approve -- room-model --note "measured"` | record an approval |
+| `nix run .#rev -- new --note "rack in the corner"` | branch a revision (`list`, `switch r1`, `diff r1..r2`) |
+| `nix run .#catalog -- list` | the catalog (`show`, `check`, `verify`, `new` + an id) |
+| `nix run .#drawings -- 01` · `nix run .#pack -- 01` | measured drawings · one direction end to end |
+| `nix run .#render -- --dry` · `nix run .#report` | photoreal views · the PDF |
+| `nix run .#serve` · `nix run .#consult -- "question"` · `nix run .#mcp` | services |
+| `nix run .#test` · `nix run .#cve-scan` | the test suite · the CVE scan |
+
+`nix flake show` lists them with descriptions. Run inside a checkout, they use the checkout as
+the data home, exactly like `./bin/design`; run anywhere else (`nix run github:motleydev/gymsmith#rooms`),
+they use `~/.local/share/roomsmith`.
+
+Inside `nix develop`, `design` itself is on your PATH and runs the checkout's own code — so
+`design check` instead of `./bin/design check`.
+
 ## Where your data goes
 
 Code and data are separate. Installed from Nix, the code is read-only in `/nix/store`, so projects,

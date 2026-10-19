@@ -49,18 +49,20 @@ then in Claude Code:
 
 ```bash
 git clone -b claude/serene-bell-7pp32i https://github.com/motleydev/gymsmith && cd gymsmith
-nix develop                     # first run downloads Python, Chromium and fonts (~1 GB, once)
-./bin/design demo               # a garage gym with a real rack, in two revisions
-./bin/design check --project demo/garage-gym@r1    # FAILS: the rack's back clearance hits the wall
-./bin/design check              # r2 (HEAD) passes
-./bin/design rev diff r1..r2    # the 0.3 m that fixed it
-./bin/design approve room-model --note "demo"      # gates are always yours to approve
-./bin/design drawings 01        # projects/demo/rooms/garage-gym/revisions/r2/drawings/01-…-plan.png
-./bin/design serve              # open the printed link: photos, annotation, r1/r2 flip, catalog
+nix run .#demo                  # first run downloads Python, Chromium and fonts (~1 GB, once)
+nix run .#check -- --project demo/garage-gym@r1    # FAILS: the rack's back clearance hits the wall
+nix run .#check                 # r2 (HEAD) passes
+nix run .#rev -- diff r1..r2    # the 0.3 m that fixed it
+nix run .#approve -- room-model --note "demo"      # gates are always yours to approve
+nix run .#drawings -- 01        # projects/demo/rooms/garage-gym/revisions/r2/drawings/01-…-plan.png
+nix run .#serve                 # open the printed link: photos, annotation, r1/r2 flip, catalog
 ```
 
-No Nix? Python 3.9+ and Chrome are enough for all of the above. Then open Claude Code in the
-folder and try *"we're thinking about a Rep PR-4000 rack and a Concept2 rower for the garage"* —
+Every command is a `nix run .#<command>` app ([full list](docs/NIX.md#every-command-is-an-app)).
+Inside `nix develop` it's shorter still — `design check`, `design serve` — and without Nix,
+`./bin/design check` with Python 3.9+ and Chrome does the same.
+
+Then open Claude Code in the folder and try *"we're thinking about a Rep PR-4000 rack and a Concept2 rower for the garage"* —
 it researches both into the catalog, and you verify them with `./bin/design catalog verify <id>`.
 For Artlist and OpenRouter, run `/mcp` in Claude Code once and sign in.
 

@@ -17,7 +17,18 @@
       "mcp__roomsmith__room_status",
       "mcp__roomsmith__catalog_list",
       "mcp__roomsmith__catalog_get",
-      "mcp__roomsmith__annotations_get"
+      "mcp__roomsmith__annotations_get",
+      "Bash(nix run .#status*)",
+      "Bash(nix run .#check*)",
+      "Bash(nix run .#gates*)",
+      "Bash(nix run .#rooms*)",
+      "Bash(nix run .#test*)",
+      "Bash(design status*)",
+      "Bash(design check*)",
+      "Bash(design rooms*)",
+      "Bash(design catalog list*)",
+      "Bash(design catalog check*)",
+      "Bash(design render --dry*)"
     ],
     "deny": [
       "Bash(./bin/design approve:*)",
@@ -32,7 +43,12 @@
       "Edit(./catalog/.verified.json)",
       "Write(./catalog/.verified.json)",
       "Edit(./projects/**/STATE.json)",
-      "Write(./projects/**/STATE.json)"
+      "Write(./projects/**/STATE.json)",
+      "Bash(nix run *#approve*)",
+      "Bash(nix run *#catalog* verify*)",
+      "Bash(nix run *#catalog* unverify*)",
+      "Bash(design catalog verify*)",
+      "Bash(design catalog unverify*)"
     ]
   }
 }
